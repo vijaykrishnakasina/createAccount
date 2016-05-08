@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -35,9 +36,14 @@ public class CreateAccountService {
 
     RandomStringUtils randomStringUtils = new RandomStringUtils();
 
-
+    String prevIp;
 
     public Boolean createAccount() {
+        if(!isIPChanged()){
+            System.out.println("IP Address not changed aborting ......");
+            return Boolean.FALSE;
+        }
+
         Acccount account = genrateAccountDetails();
         Boolean accountCreated = createAccountBasedOnInfo(account);
         if(accountCreated){
@@ -46,31 +52,53 @@ public class CreateAccountService {
         return accountCreated;
     }
 
+    private boolean isIPChanged() {
+        WebDriver driver  = new FirefoxDriver();
+        driver.get("http://www.howtofindmyipaddress.com/");
+        String myIP = driver.findElement(By.xpath("/html/body/center/div/font/table/tbody/tr[2]/td[1]/font/span[2]")).getText();
+        System.out.println("Current IP is "+myIP+" Previous IP is"+prevIp);
+        Boolean isIpChanged = !(myIP.equals(prevIp));
+        prevIp = myIP;
+        return isIpChanged;
+    }
+
     private Boolean createAccountBasedOnInfo(Acccount account) {
         Boolean accountCreated = Boolean.FALSE;
         System.out.println(account);
-        WebDriver driver  = new FirefoxDriver();
-        driver.navigate().to("https://accounts.google.com/SignUp");
-        driver.manage().window().maximize();
-        String appTitle = driver.getTitle();
-        System.out.println("Application title is :: "+appTitle);
-        driver.findElement(By.id("FirstName")).sendKeys(account.getFirstName());
-        driver.findElement(By.id("LastName")).sendKeys(account.getLastName());
-        driver.findElement(By.id("GmailAddress")).sendKeys(account.getEmail());
-        driver.findElement(By.id("Passwd")).sendKeys(account.getPassword());
-        driver.findElement(By.id("PasswdAgain")).sendKeys(account.getPassword());
+        List<WebDriver> drivers = new ArrayList<WebDriver>();
+        WebDriver firefoxDriver  = new FirefoxDriver();
 
-        driver.findElement(By.id("BirthDay")).sendKeys(account.getBirthDay());
-        driver.findElement(By.id("BirthYear")).sendKeys(account.getBirthYear());
+        System.setProperty("webdriver.chrome.driver", "C:\\Vijay\\personal\\createAccount\\src\\main\\resources\\chromedriver.exe");
+        WebDriver chromeDriver = new ChromeDriver();
 
-        driver.findElement(By.xpath("//div[@role='listbox']")).sendKeys(account.getBirthMonth());
-        driver.findElement(By.xpath("//div[@aria-activedescendant=':d']")).sendKeys(account.getGender());
+        drivers.add(firefoxDriver);
+        drivers.add(chromeDriver);
 
-        driver.findElement(By.xpath("//input[@id='TermsOfService']")).click();
-        String captchaURL = driver.findElement(By.id("recaptcha_challenge_image")).getAttribute("src");
-        String captchaValue = captcha.solveCaptcha(captchaURL);
-        //TODO : Need to sove the captcha
-        accountCreated = Boolean.TRUE;
+        for(WebDriver driver : drivers){
+            driver.navigate().to("https://accounts.google.com/SignUp");
+            driver.manage().window().maximize();
+            String appTitle = driver.getTitle();
+            System.out.println("Application title is :: "+appTitle);
+            driver.findElement(By.id("FirstName")).sendKeys(account.getFirstName());
+            driver.findElement(By.id("LastName")).sendKeys(account.getLastName());
+            driver.findElement(By.id("GmailAddress")).sendKeys(account.getEmail());
+            driver.findElement(By.id("Passwd")).sendKeys(account.getPassword());
+            driver.findElement(By.id("PasswdAgain")).sendKeys(account.getPassword());
+
+            driver.findElement(By.id("BirthDay")).sendKeys(account.getBirthDay());
+            driver.findElement(By.id("BirthYear")).sendKeys(account.getBirthYear());
+            driver.findElement(By.name("RecoveryEmailAddress")).sendKeys(account.getReferenceEmail());
+            driver.findElement(By.xpath("//div[@role='listbox']")).sendKeys(account.getBirthMonth());
+            driver.findElement(By.xpath("//div[@aria-activedescendant=':d']")).sendKeys(account.getGender());
+
+            driver.findElement(By.xpath("//input[@id='TermsOfService']")).click();
+            String captchaURL = driver.findElement(By.id("recaptcha_challenge_image")).getAttribute("src");
+            String captchaValue = captcha.solveCaptcha(captchaURL);
+            //TODO : Need to sove the captcha
+            accountCreated = Boolean.TRUE;
+
+        }
+
 
         return accountCreated;
     }
@@ -105,7 +133,7 @@ public class CreateAccountService {
         acccount.setBirthMonth("January");
         acccount.setBirthYear("1992");
         acccount.setPhoneNumber(null);
-        acccount.setReferenceEmail(null);
+        acccount.setReferenceEmail("ewzril.armlpk@gmail.com");
         acccount.setLocation("India");
 
         return acccount;
