@@ -9,6 +9,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.support.ui.Select;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -71,8 +72,12 @@ public class CreateAccountService {
         System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver.exe");
         WebDriver chromeDriver = new ChromeDriver();
 
-        drivers.add(firefoxDriver);
-        drivers.add(chromeDriver);
+        System.setProperty("webdriver.ie.driver", "src/main/resources/IEDriverServer.exe");
+        WebDriver ieDriver = new InternetExplorerDriver();
+
+//        drivers.add(firefoxDriver);
+        drivers.add(ieDriver);
+        //drivers.add(chromeDriver);
 
         for(WebDriver driver : drivers){
             driver.navigate().to("https://accounts.google.com/SignUp");
