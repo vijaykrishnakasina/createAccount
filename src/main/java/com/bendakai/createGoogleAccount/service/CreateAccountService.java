@@ -68,7 +68,7 @@ public class CreateAccountService {
         List<WebDriver> drivers = new ArrayList<WebDriver>();
         WebDriver firefoxDriver  = new FirefoxDriver();
 
-        System.setProperty("webdriver.chrome.driver", "C:\\Vijay\\personal\\createAccount\\src\\main\\resources\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver.exe");
         WebDriver chromeDriver = new ChromeDriver();
 
         drivers.add(firefoxDriver);
