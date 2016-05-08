@@ -17,6 +17,9 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -76,7 +79,11 @@ public class CreateAccountService {
     private void saveAccountDetails(Acccount account) {
         System.out.println("this method still nedds to be implemnted");
         Gson gson = new Gson();
-        try(FileWriter fw = new FileWriter("outfilename.txt", true);
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        Date date = new Date();
+        String dateNow = dateFormat.format(date);
+        try(FileWriter fw = new FileWriter(dateNow+"outfilename.txt", true);
             BufferedWriter bw = new BufferedWriter(fw);
             PrintWriter out = new PrintWriter(bw))
         {
